@@ -8,7 +8,3 @@ class Order(BaseModel):
 class OrdersRequest(BaseModel):
     transactions: List[Order]
 
-class OrderResponse(BaseModel):
-    order_value: int
-    returned: bool
-    updated_score: float
