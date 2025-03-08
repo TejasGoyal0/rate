@@ -1,15 +1,15 @@
 from fastapi import FastAPI
-from app.models import OrdersRequest, OrderResponse
-from app.rating_algorithm import StableReputation
+from models import OrdersRequest
+from ratingAlgorithm import calculate_reputation
 
 app = FastAPI()
-reputation_system = StableReputation()
 
-@app.post("/update-score", response_model=list[OrderResponse])
+@app.post("/update-score")
 def update_score(data: OrdersRequest):
-    scores = []
-    for order in data.transactions:
-        new_score = reputation_system.update_score(order.order_value, order.returned)
-        scores.append(OrderResponse(order_value=order.order_value, returned=order.returned, updated_score=new_score))
-    
-    return scores
+    # Convert transactions to list of dicts
+    transactions = [order.dict() for order in data.transactions]
+    reputation = calculate_reputation(transactions)
+    return {"reputation": reputation}
+
+# To run: uvicorn main:app --host 0.0.0.0 --port $PORT
+
